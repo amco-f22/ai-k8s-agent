@@ -1,0 +1,109 @@
+# Scenario 1 - CrashLoopBackOff (Missing Env Variable)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service-crashloop
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service-crashloop
+  template:
+    metadata:
+      labels:
+        app: payment-service-crashloop
+    spec:
+      containers:
+      - name: payment-service
+        image: busybox:latest
+        # This will fail because required ENV var DATABASE_URL is missing
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            if [ -z "$DATABASE_URL" ]; then
+              echo "FATAL: DATABASE_URL missing"
+              exit 1
+            fi
+            sleep 3600
+
+---
+# Scenario 2 - ImagePullBackOff (Invalid Image Tag)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-imagepullbackoff
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-imagepullbackoff
+  template:
+    metadata:
+      labels:
+        app: frontend-imagepullbackoff
+    spec:
+      containers:
+      - name: frontend
+        image: nginx:this-tag-does-not-exist
+
+---
+# Scenario 3 - OOMKilled (Memory Exceeded)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-processor-oomkilled
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-processor-oomkilled
+  template:
+    metadata:
+      labels:
+        app: data-processor-oomkilled
+    spec:
+      containers:
+      - name: memory-hog
+        image: vish/stress
+        args: ["-cpus", "1", "-mem-total", "250M", "-mem-alloc-size", "10M"]
+        resources:
+          limits:
+            memory: "100Mi" # Will trigger OOM since container tries to use 250M
+
+---
+# Scenario 4 - Service Selector Mismatch
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-api
+  template:
+    metadata:
+      labels:
+        app: backend-api # Correct label
+    spec:
+      containers:
+      - name: api
+        image: nginx:alpine
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-api-service
+  namespace: default
+spec:
+  selector:
+    app: backend-api-v2 # WRONG label selector (mismatch)
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

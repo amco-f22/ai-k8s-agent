@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broken-nginx
+  labels:
+    app: broken-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: broken-nginx
+  template:
+    metadata:
+      labels:
+        app: broken-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        command: ["/bin/sh", "-c"]
+        args: ["echo 'Starting Nginx...'; sleep 2; echo 'Crashing now...'; exit 1"]

@@ -132,6 +132,15 @@ During the development of this project, we encountered and overcame several comp
 
 ---
 
+## 📚 Additional Documentation
+
+To dive deeper into specific components of the project, check out these supplemental documentation files:
+
+- 📖 **[API & Architecture Docs](docs/README.md)**: Details the FastAPI backend architecture, API endpoints (like `/investigate` and `/clusters`), and additional test scenarios (`k8s-test-scenarios.yaml`).
+- 🎨 **[Frontend Documentation](frontend/README.md)**: The standard Next.js documentation for managing, building, and deploying the React-based dashboard.
+
+---
+
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](#).

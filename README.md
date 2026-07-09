@@ -31,6 +31,8 @@ The **AI Kubernetes Troubleshooting Agent** is an intelligent orchestration tool
 
 ## 🏗️ Architecture
 
+![AI Kubernetes Troubleshooting Agent Architecture](docs/Architecture.png)
+
 1. **Frontend (Next.js):** Provides a clean, modern UI for users to authenticate and trigger investigations.
 2. **Backend (FastAPI):** Exposes an `/investigate` endpoint. Uses `subprocess` to execute local `kubectl` commands against the active context.
 3. **LLM Engine:** Formats the raw Kubernetes JSON output into a targeted prompt and queries OpenRouter.

@@ -631,21 +631,10 @@ export default function Dashboard() {
                         </svg>
                         {timeAgo(item.created_at)}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${sev.bg} ${sev.color} ${sev.border} border`}>
-                          <span className={`w-1 h-1 rounded-full ${sev.dot}`} />
-                          {sev.label}
-                        </span>
-                        <button
-                          onClick={(e) => deleteHistoryItem(e, item.id)}
-                          className="p-1 rounded hover:bg-red-500/10 text-slate-500 hover:text-red-400 transition-colors"
-                          title="Delete investigation"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${sev.bg} ${sev.color} ${sev.border} border`}>
+                        <span className={`w-1 h-1 rounded-full ${sev.dot}`} />
+                        {sev.label}
+                      </span>
                     </div>
                     {item.cluster_name && (
                       <div className="text-[10px] text-cyan-400/70 font-mono mb-2 truncate">
@@ -655,13 +644,25 @@ export default function Dashboard() {
                     <div className="font-medium text-sm text-slate-200 line-clamp-2 mb-3 group-hover:text-cyan-400 transition-colors">
                       {item.diagnosis?.root_cause || "Unknown failure"}
                     </div>
-                    <div className="flex justify-between items-center text-xs">
+                    <div className="flex justify-between items-center text-xs pt-2 border-t border-slate-800/40">
                       <span className="px-2 py-1 bg-slate-900 border border-slate-700 text-slate-300 rounded font-mono">
                         {item.diagnosis?.confidence}%
                       </span>
-                      <span className="text-slate-500 group-hover:text-slate-300 transition-colors text-[10px]">
-                        View details →
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={(e) => deleteHistoryItem(e, item.id)}
+                          className="flex items-center gap-1 px-2 py-1 rounded bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 text-red-400 hover:text-red-300 transition-all text-[10px] font-semibold"
+                          title="Delete investigation"
+                        >
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          Delete
+                        </button>
+                        <span className="text-slate-400 group-hover:text-cyan-400 transition-colors text-[10px] font-medium">
+                          Details →
+                        </span>
+                      </div>
                     </div>
                   </div>
                 );

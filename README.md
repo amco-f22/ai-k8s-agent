@@ -204,6 +204,12 @@ During the development of this project, we encountered and overcame several comp
 - **Challenge:** Allowing a containerized FastAPI backend to securely execute `kubectl` against the host machine's Kubernetes clusters.
 - **Solution:** Mounted `~/.kube` as a read-only volume in `docker-compose.yml`, giving the container seamless access to all cluster contexts.
 
+### 5. Stale Events Causing False Positives 👻
+- **Challenge:** On a perfectly healthy cluster, the AI would report "Node failure and control plane instability" as a critical issue. This happened because Kubernetes retains old Warning events (like `Rebooted`, `Unhealthy`, `BackOff`) from previous Docker Desktop restarts — even though the cluster had fully recovered.
+- **Solution:** Applied a two-pronged fix:
+  1. **Time-based event filtering** in `events_analyzer.py` — only events from the last 5 minutes are now included in the investigation data, filtering out stale noise.
+  2. **Improved LLM prompt** in `prompt_builder.py` — explicitly instructs the AI to determine cluster health by the *current* state of pods (Running vs CrashLoopBackOff), not by historical events. A healthy cluster now correctly returns `severity: "info"`.
+
 ---
 
 ## 🏆 Best Practices Followed
@@ -216,6 +222,7 @@ During the development of this project, we encountered and overcame several comp
 | 🔄 **Retry with backoff** | The LLM client retries transient errors (429, 500, 502, 503) with exponential backoff (1s → 2s → 4s). |
 | 🗃️ **Row Level Security** | The `investigations` table uses PostgreSQL RLS so users can only read their own data. |
 | 📝 **Structured logging** | Uses Loguru for rich, structured log output with timestamps and severity levels. |
+| ⏱️ **Event recency filtering** | Only Kubernetes events from the last 5 minutes are fed to the AI, eliminating false positives from stale cluster history. |
 
 ---
 

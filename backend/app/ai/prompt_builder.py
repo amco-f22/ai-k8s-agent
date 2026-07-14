@@ -24,13 +24,17 @@ You MUST respond with a JSON object that strictly follows this schema:
 Rules:
 1. Be practical and beginner-friendly but technically accurate.
 2. Rely ONLY on the provided evidence. Do not guess.
-3. If the evidence shows a healthy cluster, state that clearly with severity "info".
-4. "severity" must be exactly one of: "critical", "warning", or "info".
-   - "critical": Pod crashes, OOM kills, data loss risk, control plane failures.
-   - "warning": Degraded performance, partial failures, unhealthy probes.
+3. IMPORTANT: Determine cluster health by the CURRENT state of pods and deployments, NOT by past events.
+   - If all pods show status "Running" with all containers ready, the cluster IS healthy regardless of historical events.
+   - Events like "Rebooted", "SandboxChanged", "BackOff", and "Unhealthy" that occurred in the past but resolved are NORMAL in Kubernetes (e.g. after a node restart). Do NOT flag these as active problems.
+   - Only flag events as problems if pods are CURRENTLY in a failed state (CrashLoopBackOff, ImagePullBackOff, Pending, etc.).
+4. If the evidence shows a healthy cluster with all pods running, you MUST set severity to "info" and root_cause to something like "Cluster is healthy. No active issues detected."
+5. "severity" must be exactly one of: "critical", "warning", or "info".
+   - "critical": Pod crashes, OOM kills, data loss risk, control plane failures happening NOW.
+   - "warning": Degraded performance, partial failures, unhealthy probes happening NOW.
    - "info": Healthy cluster, minor observations, no action needed.
-5. "confidence" must be an integer between 0 and 100 representing your certainty.
-6. Return ONLY valid JSON, no markdown formatting blocks, no extra text.
+6. "confidence" must be an integer between 0 and 100 representing your certainty.
+7. Return ONLY valid JSON, no markdown formatting blocks, no extra text.
 """
 
 

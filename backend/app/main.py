@@ -1,6 +1,6 @@
 """AI Kubernetes Troubleshooting Agent - FastAPI Backend."""
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from loguru import logger
@@ -12,7 +12,7 @@ import asyncio
 from app.core.logging import setup_logging
 from app.services.investigation_service import run_investigation_stream
 from app.services.diagnosis_service import generate_diagnosis
-from app.services.insforge_service import save_investigation
+from app.services.insforge_service import save_investigation, delete_investigation
 from app.kubernetes.kubectl_executor import get_clusters
 from app.api.deps import get_current_user
 import httpx
@@ -143,3 +143,16 @@ async def get_investigations(current_user: Dict[str, Any] = Depends(get_current_
         response = await client.get(url, headers=headers)
         response.raise_for_status()
         return response.json()
+
+
+@app.delete("/investigations/{investigation_id}")
+async def delete_user_investigation(investigation_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
+    """
+    Delete an investigation by ID for the current user.
+    """
+    logger.info(f"Delete investigation {investigation_id} called by user {current_user.get('user', {}).get('id')}.")
+    success = await delete_investigation(current_user["raw_token"], investigation_id)
+    if not success:
+        raise HTTPException(status_code=400, detail="Failed to delete investigation.")
+    return {"status": "success", "message": f"Investigation {investigation_id} deleted."}
+

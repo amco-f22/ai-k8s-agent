@@ -18,3 +18,8 @@ CREATE POLICY "Users can view their own investigations"
 CREATE POLICY "Users can insert their own investigations"
     ON investigations FOR INSERT
     WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own investigations"
+    ON investigations FOR DELETE
+    USING (auth.uid() = user_id);
+

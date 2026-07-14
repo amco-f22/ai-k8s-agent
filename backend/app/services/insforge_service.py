@@ -39,3 +39,30 @@ async def save_investigation(token: str, user_id: str, cluster_name: str, invest
         if isinstance(e, httpx.HTTPStatusError):
             logger.error(f"Response: {e.response.text}")
         return False
+
+
+async def delete_investigation(token: str, investigation_id: str) -> bool:
+    """
+    Deletes an investigation from the InsForge database by its ID.
+    Uses the user's Bearer token so RLS/policies are applied automatically.
+    """
+    url = f"{settings.insforge_url}/api/database/records/investigations?id=eq.{investigation_id}"
+    
+    headers = {
+        "apikey": settings.insforge_anon_key,
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.delete(url, headers=headers)
+            response.raise_for_status()
+            logger.info(f"Investigation {investigation_id} deleted from InsForge successfully.")
+            return True
+    except Exception as e:
+        logger.error(f"Failed to delete investigation {investigation_id} from InsForge: {e}")
+        if isinstance(e, httpx.HTTPStatusError):
+            logger.error(f"Response: {e.response.text}")
+        return False
+

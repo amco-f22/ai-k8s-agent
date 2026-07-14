@@ -158,6 +158,7 @@ npm run dev
 | `GET` | `/clusters` | ✅ | List available kubeconfig cluster contexts |
 | `POST` | `/investigate` | ✅ | Run AI investigation (returns SSE stream) |
 | `GET` | `/investigations` | ✅ | Fetch user's investigation history |
+| `DELETE` | `/investigations/{id}` | ✅ | Delete a specific investigation |
 
 ---
 

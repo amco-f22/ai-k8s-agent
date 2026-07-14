@@ -62,3 +62,4 @@ This deploys 4 intentional failure scenarios:
 | GET | `/clusters` | List kubeconfig clusters |
 | POST | `/investigate` | Run investigation (SSE stream) |
 | GET | `/investigations` | Fetch investigation history |
+| DELETE | `/investigations/{id}` | Delete a specific investigation |

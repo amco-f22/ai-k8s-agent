@@ -370,6 +370,32 @@ export default function Dashboard() {
     setViewState('history');
   };
 
+  const deleteHistoryItem = async (e: React.MouseEvent, itemId: string) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this investigation from your history?")) {
+      return;
+    }
+    try {
+      const token = localStorage.getItem("insforge_token");
+      if (!token) return;
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"}/investigations/${itemId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      if (selectedHistoryItem?.id === itemId) {
+        setViewState('select');
+        setSelectedHistoryItem(null);
+      }
+      fetchHistory(token);
+    } catch (err) {
+      console.error("Failed to delete history item", err);
+      alert("Failed to delete the investigation history item.");
+    }
+  };
+
+
   if (loading) {
     return <DashboardSkeleton />;
   }
@@ -605,10 +631,21 @@ export default function Dashboard() {
                         </svg>
                         {timeAgo(item.created_at)}
                       </div>
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${sev.bg} ${sev.color} ${sev.border} border`}>
-                        <span className={`w-1 h-1 rounded-full ${sev.dot}`} />
-                        {sev.label}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${sev.bg} ${sev.color} ${sev.border} border`}>
+                          <span className={`w-1 h-1 rounded-full ${sev.dot}`} />
+                          {sev.label}
+                        </span>
+                        <button
+                          onClick={(e) => deleteHistoryItem(e, item.id)}
+                          className="p-1 rounded hover:bg-red-500/10 text-slate-500 hover:text-red-400 transition-colors"
+                          title="Delete investigation"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                     {item.cluster_name && (
                       <div className="text-[10px] text-cyan-400/70 font-mono mb-2 truncate">

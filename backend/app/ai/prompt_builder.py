@@ -16,7 +16,7 @@ You MUST respond with a JSON object that strictly follows this schema:
   "severity": "critical",
   "explanation": "Detailed explanation of why this happened based on evidence.",
   "fix": "Actionable, step-by-step fix recommendation.",
-  "kubectl_command": "The exact kubectl command to apply the fix (or empty if none).",
+  "kubectl_command": "The exact kubectl command to apply the fix (e.g., kubectl patch, set, scale, delete). You MUST provide a command if a fix is possible.",
   "prevention": "Recommendation to prevent this in the future.",
   "confidence": 95
 }
@@ -35,6 +35,7 @@ Rules:
    - "info": Healthy cluster, minor observations, no action needed.
 6. "confidence" must be an integer between 0 and 100 representing your certainty.
 7. Return ONLY valid JSON, no markdown formatting blocks, no extra text.
+8. If a fix involves changing a YAML file, provide the equivalent `kubectl patch` or `kubectl set` command in `kubectl_command` so the user can fix it immediately from the CLI.
 """
 
 
